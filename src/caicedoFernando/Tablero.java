@@ -12,23 +12,25 @@ public class Tablero {
     private static final char[] SIMBOLOS_PALOS = { '♠', '♥', '♦', '♣' };
     private static final String[] VALORES_CARTAS = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
-    final int CARTAS_TOTALES = 52;
-    final int CARTAS_MAXIMAS_POR_PILA = 13;
-    final int CARTAS_MAXIMAS_POR_COLUMNA = 20;
+    private final int CARTAS_TOTALES = 52;
+    private final int CARTAS_MAXIMAS_POR_PILA = 13;
+    private final int NUMERO_PALOS = 4;
+    private final int CARTAS_MAXIMAS_POR_COLUMNA = 20;
+    private final int NUMERO_COLUMNAS = 7;
 
     public Tablero() {
 
         baraja = new PilaCartas(CARTAS_TOTALES);
         descarte = new PilaCartas(CARTAS_TOTALES);
-        palos = new PilaCartas[4];
+        palos = new PilaCartas[NUMERO_PALOS];
         columnas = new Columna[7];
         reglas = new Reglas();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMERO_PALOS; i++) {
             palos[i] = new PilaCartas(CARTAS_MAXIMAS_POR_PILA);
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < NUMERO_COLUMNAS; i++) {
             columnas[i] = new Columna(CARTAS_MAXIMAS_POR_COLUMNA);
         }
 
@@ -38,10 +40,10 @@ public class Tablero {
 
     private void llenarBarajaConCartasMezcladas() {
         Random generador = new Random();
-        Carta[] todasLasCartas = new Carta[52];
+        Carta[] todasLasCartas = new Carta[CARTAS_TOTALES];
         int totalCartas = 0;
 
-        for (int paloIndex = 0; paloIndex < 4; paloIndex++) {
+        for (int paloIndex = 0; paloIndex < NUMERO_PALOS; paloIndex++) {
             for (int valorIndex = 0; valorIndex < CARTAS_MAXIMAS_POR_PILA; valorIndex++) {
                 todasLasCartas[totalCartas] = new Carta(VALORES_CARTAS[valorIndex], SIMBOLOS_PALOS[paloIndex], false);
                 totalCartas++;
@@ -58,7 +60,7 @@ public class Tablero {
     }
 
     private void repartirCartasAColumnas() {
-        for (int columnaIndex = 0; columnaIndex < 7; columnaIndex++) {
+        for (int columnaIndex = 0; columnaIndex < NUMERO_COLUMNAS; columnaIndex++) {
             for (int cartaIndex = 0; cartaIndex <= columnaIndex; cartaIndex++) {
                 Carta carta = baraja.sacarCarta();
                 if (cartaIndex == columnaIndex)
@@ -78,7 +80,7 @@ public class Tablero {
         }
         System.out.println();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMERO_PALOS; i++) {
             System.out.print((i + 1) + "º Palo: ");
             int cartasEnPalo = palos[i].obtenerCantidad();
             if (cartasEnPalo == 0)
@@ -87,7 +89,7 @@ public class Tablero {
                 System.out.println(palos[i].obtenerCartaEn(cartasEnPalo - 1).mostrar());
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < NUMERO_COLUMNAS; i++) {
             columnas[i].mostrarColumna(i + 1);
         }
     }
@@ -116,7 +118,7 @@ public class Tablero {
             return false;
 
         Carta carta = descarte.obtenerCartaEn(descarte.obtenerCantidad() - 1);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMERO_PALOS; i++) {
             if (reglas.puedeMoverAPalo(carta, palos[i])) {
                 palos[i].agregarCarta(descarte.sacarCarta());
                 return true;
@@ -126,7 +128,8 @@ public class Tablero {
     }
 
     public boolean moverCartaEntreColumnas(int columnaOrigen, int columnaDestino) {
-        if (columnaOrigen < 0 || columnaOrigen >= 7 || columnaDestino < 0 || columnaDestino >= 7)
+        if (columnaOrigen < 0 || columnaOrigen >= NUMERO_COLUMNAS || columnaDestino < 0
+                || columnaDestino >= NUMERO_COLUMNAS)
             return false;
 
         Carta cartaOrigen = columnas[columnaOrigen].obtenerCartaEn(columnas[columnaOrigen].obtenerCantidad() - 1);
